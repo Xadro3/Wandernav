@@ -22,12 +22,13 @@ class GpxParser {
         var inMetadata = false
         var metadataDepth = -1
         var inTrack = false
+        var inRoute = false
         var currentSegment: MutableList<GeoPoint>? = null
         var currentTrackPoint: MutablePoint? = null
         var currentWaypoint: MutableWaypoint? = null
         val segments = mutableListOf<List<GeoPoint>>()
         val waypoints = mutableListOf<Waypoint>()
-        val warnings = linkedSetOf<String>()
+        val warnings = linkedSetOf<GpxWarning>()
         var trackPointCount = 0
         var seenGpx = false
         var event = parser.eventType
@@ -40,7 +41,7 @@ class GpxParser {
                         creator = parser.getAttributeValue(null, "creator")
                         val version = parser.getAttributeValue(null, "version")
                         if (version != null && version !in setOf("1.0", "1.1")) {
-                            warnings += "This file uses unfamiliar GPX version $version."
+                            warnings += GpxWarning(GpxWarningKind.UNFAMILIAR_VERSION, detail = version)
                         }
                     }
 
@@ -51,6 +52,11 @@ class GpxParser {
                     "trk" -> inTrack = true
                     "trkseg" -> currentSegment = mutableListOf()
                     "trkpt" -> currentTrackPoint = pointFromAttributes(parser, warnings)
+                    "rte" -> {
+                        inRoute = true
+                        currentSegment = mutableListOf()
+                    }
+                    "rtept" -> currentTrackPoint = pointFromAttributes(parser, warnings)
                     "wpt" -> currentWaypoint = waypointFromAttributes(parser, warnings)
                     "ele" -> parser.nextText().toDoubleOrNull()?.let { elevation ->
                         currentTrackPoint?.elevationMetres = elevation
@@ -63,7 +69,7 @@ class GpxParser {
                         when {
                             currentWaypoint != null -> currentWaypoint.name = value
                             currentTrackPoint != null -> Unit
-                            inTrack && currentSegment == null -> trackName = value
+                            (inTrack && currentSegment == null) || inRoute -> if (trackName == null) trackName = value
                             inMetadata && depth == metadataDepth + 1 -> metadataName = value
                         }
                     }
@@ -71,7 +77,7 @@ class GpxParser {
                     "type" -> {
                         val value = parser.nextText().trim().ifEmpty { null }
                         if (currentWaypoint != null) currentWaypoint.type = value
-                        else if (inTrack && currentSegment == null) category = value
+                        else if ((inTrack && currentSegment == null) || inRoute) category = value
                     }
 
                     "oaCategory" -> if (category == null) {
@@ -85,12 +91,12 @@ class GpxParser {
                         metadataDepth = -1
                     }
                     "trk" -> inTrack = false
-                    "trkpt" -> {
+                    "trkpt", "rtept" -> {
                         currentTrackPoint?.toGeoPoint()?.let { point ->
                             currentSegment?.add(point)
                             trackPointCount++
                             if (trackPointCount > MAX_POINTS) {
-                                throw GpxParseException("This GPX contains more than $MAX_POINTS track points.")
+                                throw GpxParseException(GpxParseError.TOO_MANY_POINTS, MAX_POINTS)
                             }
                         }
                         currentTrackPoint = null
@@ -99,6 +105,12 @@ class GpxParser {
                     "trkseg" -> {
                         currentSegment?.takeIf { it.isNotEmpty() }?.let(segments::add)
                         currentSegment = null
+                    }
+
+                    "rte" -> {
+                        currentSegment?.takeIf { it.isNotEmpty() }?.let(segments::add)
+                        currentSegment = null
+                        inRoute = false
                     }
 
                     "wpt" -> {
@@ -110,19 +122,21 @@ class GpxParser {
             event = parser.next()
         }
 
-        if (!seenGpx) throw GpxParseException("The selected file is not a GPX document.")
+        if (!seenGpx) throw GpxParseException(GpxParseError.NOT_GPX)
         if (segments.isEmpty() || segments.all { it.size < 2 }) {
-            throw GpxParseException("The GPX does not contain a usable track.")
+            throw GpxParseException(GpxParseError.NO_USABLE_TRACK)
         }
 
         val statistics = calculateStatistics(segments)
         if (statistics.maximumGapMetres > 250.0) {
-            warnings += "Some track points are more than 250 m apart; guidance may be less precise there."
+            warnings += GpxWarning(GpxWarningKind.SPARSE_TRACK)
         }
         category?.takeIf { it.contains("ski", ignoreCase = true) }?.let {
-            warnings += "The source classifies this route as $it rather than a hiking route."
+            warnings += GpxWarning(GpxWarningKind.NON_HIKING_CATEGORY, detail = it)
         }
-        if (segments.size > 1) warnings += "This route contains ${segments.size} separate track segments."
+        if (segments.size > 1) {
+            warnings += GpxWarning(GpxWarningKind.MULTIPLE_SEGMENTS, count = segments.size)
+        }
 
         return GpxRoute(
             name = trackName ?: metadataName ?: fallbackName.substringBeforeLast('.'),
@@ -140,12 +154,12 @@ class GpxParser {
 
     private fun pointFromAttributes(
         parser: XmlPullParser,
-        warnings: MutableSet<String>,
+        warnings: MutableSet<GpxWarning>,
     ): MutablePoint? {
         val latitude = parser.getAttributeValue(null, "lat")?.toDoubleOrNull()
         val longitude = parser.getAttributeValue(null, "lon")?.toDoubleOrNull()
         if (latitude == null || longitude == null || latitude !in -90.0..90.0 || longitude !in -180.0..180.0) {
-            warnings += "One or more track points had invalid coordinates and were skipped."
+            warnings += GpxWarning(GpxWarningKind.INVALID_TRACK_POINTS)
             return null
         }
         return MutablePoint(latitude, longitude)
@@ -153,12 +167,12 @@ class GpxParser {
 
     private fun waypointFromAttributes(
         parser: XmlPullParser,
-        warnings: MutableSet<String>,
+        warnings: MutableSet<GpxWarning>,
     ): MutableWaypoint? {
         val latitude = parser.getAttributeValue(null, "lat")?.toDoubleOrNull()
         val longitude = parser.getAttributeValue(null, "lon")?.toDoubleOrNull()
         if (latitude == null || longitude == null || latitude !in -90.0..90.0 || longitude !in -180.0..180.0) {
-            warnings += "One or more waypoints had invalid coordinates and were skipped."
+            warnings += GpxWarning(GpxWarningKind.INVALID_WAYPOINTS)
             return null
         }
         return MutableWaypoint(latitude, longitude)
@@ -232,4 +246,13 @@ class GpxParser {
     }
 }
 
-class GpxParseException(message: String) : Exception(message)
+enum class GpxParseError {
+    NOT_GPX,
+    NO_USABLE_TRACK,
+    TOO_MANY_POINTS,
+}
+
+class GpxParseException(
+    val reason: GpxParseError,
+    val limit: Int? = null,
+) : Exception(reason.name)

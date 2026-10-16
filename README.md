@@ -4,7 +4,7 @@ Wandernav is a small, offline-first Android hiking navigator. Its first goal is 
 
 ## Current state
 
-The app opens a GPX document using Android's system file picker, parses its track and optional waypoints, and renders a map-free route preview with basic statistics and sanity warnings. It deliberately has no internet or location permissions yet.
+The app opens a GPX document using Android's system file picker, parses its track and optional waypoints, and renders the route over an online vector map with basic statistics and sanity warnings. A foreground-only navigation prototype uses the platform GPS provider to show route progress, remaining distance, and distance from the track. No account, analytics, advertising, or API key is involved.
 
 ## Product principles
 
@@ -28,9 +28,15 @@ Open the repository in Android Studio and allow it to sync. A Gradle wrapper wil
 1. Read the selected document through `ContentResolver`.
 2. Parse GPX metadata, track segments, elevation, and waypoints with the platform XML pull parser.
 3. Validate coordinates and calculate distance, ascent, descent, and point spacing.
-4. Draw the route and markers on an aspect-ratio-preserving Compose canvas.
+4. Draw the route over a MapLibre vector map using OpenFreeMap's keyless Liberty style.
 
-Map rendering and location permissions will be added only after this import pipeline is reliable across files from multiple sources.
+The current beta map needs an internet connection. MapLibre's offline-region support gives us a direct path to user-selected map downloads without changing the route or navigation layers.
+
+## Navigation prototype
+
+Navigation currently runs only while the app is active. It uses Android's GPS provider directly, with no Google Play Services dependency. Background navigation, notifications, off-route alerts, and recovery after process termination are intentionally deferred until the route-matching behavior has been tested against more GPX files.
+
+GPS route matching continues to work without a network connection after navigation has started; only uncached map tiles may be unavailable.
 
 ## License
 

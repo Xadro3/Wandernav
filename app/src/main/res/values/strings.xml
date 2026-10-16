@@ -1,5 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Wandernav</string>
+    <string name="choose_gpx_prompt">Choose a GPX route to begin.</string>
+    <string name="import_gpx">Import GPX</string>
+    <string name="choose_another_gpx">Choose another GPX</string>
+    <string name="distance">Distance</string>
+    <string name="ascent">Ascent</string>
+    <string name="points">Points</string>
+    <string name="waypoints">Waypoints</string>
+    <string name="distance_kilometres">%1$.1f km</string>
+    <string name="elevation_metres">%1$d m</string>
+    <string name="source_category">Source category: %1$s</string>
+    <string name="preview_only_notice">Route preview — navigation is not active.</string>
+    <string name="error_not_gpx">The selected file is not a GPX document.</string>
+    <string name="error_no_usable_track">The GPX does not contain a usable track.</string>
+    <string name="error_too_many_points">This GPX contains more than %1$d track points.</string>
+    <string name="error_import_failed">The GPX could not be imported.</string>
+    <string name="warning_gpx_version">This file uses unfamiliar GPX version %1$s.</string>
+    <string name="warning_invalid_track_points">One or more track points had invalid coordinates and were skipped.</string>
+    <string name="warning_invalid_waypoints">One or more waypoints had invalid coordinates and were skipped.</string>
+    <string name="warning_sparse_track">Some track points are more than 250 m apart; guidance may be less precise there.</string>
+    <string name="warning_non_hiking">The source classifies this route as %1$s rather than a hiking route.</string>
+    <string name="start_navigation">Start navigation</string>
+    <string name="stop_navigation">Stop navigation</string>
+    <string name="waiting_for_gps">Waiting for a GPS fix…</string>
+    <string name="progress">Progress</string>
+    <string name="remaining">Remaining</string>
+    <string name="off_route_distance">Off route</string>
+    <string name="gps_accuracy">GPS accuracy</string>
+    <string name="percentage">%1$d%%</string>
+    <string name="distance_metres">%1$d m</string>
+    <string name="location_permission_denied">Precise location permission is required to navigate.</string>
+    <string name="gps_unavailable">The GPS provider is unavailable or disabled.</string>
+    <string name="warning_gps_lost">GPS signal lost. Move to an open area and verify location services.</string>
+    <string name="warning_route_deviation">You are approximately %1$d m away from the route.</string>
+    <plurals name="warning_multiple_segments">
+        <item quantity="one">This route contains %1$d separate track segment.</item>
+        <item quantity="other">This route contains %1$d separate track segments.</item>
+    </plurals>
 </resources>
-

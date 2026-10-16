@@ -21,4 +21,10 @@ Dependencies must not silently initialize network services. Optional features sh
 | AndroidX Activity Compose | Hosts the Compose UI and system activity-result contracts | None |
 | Jetpack Compose Foundation | Layout, scrolling, and route canvas primitives | None |
 | Jetpack Compose Material 3 | UI toolkit | None |
+| AndroidX Lifecycle Compose | Connects the native map view to the activity lifecycle | None |
+| MapLibre Native 13.6.1 | Vector-map rendering and future offline-region storage | Fetches only the configured map style and tile resources; contains no analytics SDK |
 | JUnit 4 | Local unit tests only; excluded from the app | None |
+
+## Map service
+
+The beta uses the keyless OpenFreeMap Liberty vector style at `https://tiles.openfreemap.org/styles/liberty`. MapLibre attribution controls remain enabled. The style URL is isolated in the map renderer so the provider can be replaced or self-hosted later.

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wandernav</string>
+    <string name="choose_gpx_prompt">Wähle eine GPX-Route aus.</string>
+    <string name="import_gpx">GPX importieren</string>
+    <string name="choose_another_gpx">Andere GPX auswählen</string>
+    <string name="distance">Distanz</string>
+    <string name="ascent">Aufstieg</string>
+    <string name="points">Punkte</string>
+    <string name="waypoints">Wegpunkte</string>
+    <string name="distance_kilometres">%1$.1f km</string>
+    <string name="elevation_metres">%1$d m</string>
+    <string name="source_category">Quellkategorie: %1$s</string>
+    <string name="preview_only_notice">Routenvorschau — die Navigation ist nicht aktiv.</string>
+    <string name="error_not_gpx">Die ausgewählte Datei ist kein GPX-Dokument.</string>
+    <string name="error_no_usable_track">Die GPX-Datei enthält keinen verwendbaren Track.</string>
+    <string name="error_too_many_points">Diese GPX-Datei enthält mehr als %1$d Trackpunkte.</string>
+    <string name="error_import_failed">Die GPX-Datei konnte nicht importiert werden.</string>
+    <string name="warning_gpx_version">Diese Datei verwendet die unbekannte GPX-Version %1$s.</string>
+    <string name="warning_invalid_track_points">Mindestens ein Trackpunkt hatte ungültige Koordinaten und wurde übersprungen.</string>
+    <string name="warning_invalid_waypoints">Mindestens ein Wegpunkt hatte ungültige Koordinaten und wurde übersprungen.</string>
+    <string name="warning_sparse_track">Einige Trackpunkte liegen mehr als 250 m auseinander; dort kann die Navigation ungenauer sein.</string>
+    <string name="warning_non_hiking">Die Quelle klassifiziert diese Route als %1$s und nicht als Wanderroute.</string>
+    <string name="start_navigation">Navigation starten</string>
+    <string name="stop_navigation">Navigation beenden</string>
+    <string name="waiting_for_gps">Warte auf ein GPS-Signal…</string>
+    <string name="progress">Fortschritt</string>
+    <string name="remaining">Verbleibend</string>
+    <string name="off_route_distance">Routenabstand</string>
+    <string name="gps_accuracy">GPS-Genauigkeit</string>
+    <string name="percentage">%1$d%%</string>
+    <string name="distance_metres">%1$d m</string>
+    <string name="location_permission_denied">Für die Navigation wird der genaue Standort benötigt.</string>
+    <string name="gps_unavailable">Der GPS-Anbieter ist nicht verfügbar oder deaktiviert.</string>
+    <string name="warning_gps_lost">GPS-Signal verloren. Begib dich in einen freien Bereich und prüfe die Standortdienste.</string>
+    <string name="warning_route_deviation">Du bist ungefähr %1$d m von der Route entfernt.</string>
+    <plurals name="warning_multiple_segments">
+        <item quantity="one">Diese Route enthält %1$d getrenntes Tracksegment.</item>
+        <item quantity="other">Diese Route enthält %1$d getrennte Tracksegmente.</item>
+    </plurals>
+</resources>
