@@ -41,6 +41,9 @@ jobs:
         with:
           cache-provider: basic
 
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
       - name: Verify and build debug APK
         run: ./gradlew check assembleDebug --stacktrace
 
