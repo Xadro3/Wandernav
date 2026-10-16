@@ -21,7 +21,9 @@ The app opens a GPX document using Android's system file picker, parses its trac
 - Android Studio with JDK 17 or newer
 - Android SDK 37
 
-Open the repository in Android Studio and allow it to sync. A Gradle wrapper will be added once a compatible Gradle installation or Android Studio environment is available locally.
+Open the repository in Android Studio and allow it to sync, or build from a terminal with the included Gradle wrapper.
+
+GitHub Actions runs unit tests, Android lint, and a debug build for every push and pull request. Successful runs provide the debug APK as a downloadable workflow artifact for 14 days. Release and Play Store builds are intentionally excluded until protected signing credentials are configured.
 
 ## Current import slice
 
