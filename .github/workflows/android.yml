@@ -34,7 +34,7 @@ jobs:
           packages: ""
 
       - name: Install required Android SDK
-        run: sdkmanager "platforms;android-37"
+        run: android --no-metrics sdk install platforms/android-37
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
